@@ -5,6 +5,8 @@ import io.vavr.control.Option;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 import static io.vavr.API.TODO;
 
@@ -24,6 +26,10 @@ interface List<E> {
 
     static <E> List<E> nil(){
         return Nil.instance();
+    }
+
+    static <E> List<E> fill(int n, Supplier<E> supplier) {
+        return TODO();
     }
 
     default List<E> tail(){
@@ -46,6 +52,20 @@ interface List<E> {
 
     default <T> List<T> map(Function1<? super E, ? extends T> mapper){
         return TODO();
+    }
+
+    default List<E> drop(int n) {
+        return TODO();
+    }
+
+    default <U> U foldLeft(U zero, BiFunction<? super U, ? super E, ? extends U> f){
+        U result = zero;
+        List<E> tail = this;
+        while(!(tail instanceof Nil)){
+            result = f.apply(result, tail.head());
+            tail = tail.tail();
+        }
+        return result;
     }
 
     final class Nil<A> implements List<A> {

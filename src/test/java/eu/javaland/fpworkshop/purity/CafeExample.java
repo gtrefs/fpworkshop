@@ -62,16 +62,16 @@ public class CafeExample {
         }
     }
 
-    private class Coffee {
+    class Coffee {
         BigDecimal price = new BigDecimal(1);
     }
 
-    private class CreditCard {
+    static class CreditCard {
     }
 
-    private static class Charge {
-        private final CreditCard creditCard;
-        private final BigDecimal price;
+    static class Charge {
+        public final CreditCard creditCard;
+        public final BigDecimal price;
 
         private Charge(CreditCard creditCard, BigDecimal price) {
             this.creditCard = creditCard;

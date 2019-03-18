@@ -24,10 +24,10 @@ public class Exercises {
     // Describe why and/or why not.
     @Test
     public void addition() {
-        var one = 1;
-        var two = 2;
+        int one = 1;
+        int two = 2;
 
-        var three = add(one, two);
+        int three = add(one, two);
 
         assertThat(three, equalTo(3));
     }
@@ -41,10 +41,10 @@ public class Exercises {
     // Describe why and/or why not.
     @Test
     public void division(){
-        var zero = 0;
-        var one = 1;
+        int zero = 0;
+        int one = 1;
 
-        var dividedByZero = divide(one, zero);
+        int dividedByZero = divide(one, zero);
 
         assertThat(dividedByZero, equalTo(Integer.MAX_VALUE));
     }
@@ -66,14 +66,14 @@ public class Exercises {
     // Describe why and/or why not.
     @Test
     public void checkoutThreeCoffees(){
-        var creditCard = new CreditCard();
-        var charges = List.fill(3, () -> Charge.of(creditCard, new BigDecimal(1)));
+        CreditCard creditCard = new CreditCard();
+        List<Charge> charges = List.fill(3, () -> Charge.of(creditCard, new BigDecimal(1)));
 
         checkout(charges);
     }
 
     private void checkout(List<Charge> charges) {
-        var chargeFromPaymentProvider = (Consumer<Charge>) charge -> {
+        Consumer<Charge> chargeFromPaymentProvider = (Consumer<Charge>) charge -> {
             throw new IllegalStateException("Could not reach server");
         };
 
@@ -86,22 +86,22 @@ public class Exercises {
     // Hint 2: Use function Charge#combine
     @Test
     public void checkoutFailsInTheFuture(){
-        var creditCard = new CreditCard();
-        var charges = List.fill(3, Charge.of(creditCard, new BigDecimal(1)));
-        var paymentProvider = API.<Charge, Clearance>Function(charge -> Clearance.uncleared(charge, "Could not reach server"));
+        CreditCard creditCard = new CreditCard();
+        List<Charge> charges = List.fill(3, Charge.of(creditCard, new BigDecimal(1)));
+        Function1<Charge, Clearance> paymentProvider = API.<Charge, Clearance>Function(charge -> Clearance.uncleared(charge, "Could not reach server"));
 
-        var clearance = checkout2(charges, paymentProvider);
+        Future<Clearance> clearance = checkout2(charges, paymentProvider);
 
         assertThat(clearance.get(), equalTo(Clearance.uncleared(Charge.of(creditCard, new BigDecimal(3)), "Could not reach server")));
     }
 
     @Test
     public void checkoutSucceedsWithADifferentPaymentProvider(){
-        var creditCard = new CreditCard();
-        var charges = List.fill(3, Charge.of(creditCard, new BigDecimal(1)));
-        var paymentProvider = API.<Charge, Clearance>Function(charge -> Clearance.cleared(charge.price));
+        CreditCard creditCard = new CreditCard();
+        List<Charge> charges = List.fill(3, Charge.of(creditCard, new BigDecimal(1)));
+        Function1<Charge, Clearance> paymentProvider = API.<Charge, Clearance>Function(charge -> Clearance.cleared(charge.price));
 
-        var clearance = checkout2(charges, paymentProvider);
+        Future<Clearance> clearance = checkout2(charges, paymentProvider);
 
         assertThat(clearance.get(), equalTo(Clearance.cleared(new BigDecimal(3))));
     }

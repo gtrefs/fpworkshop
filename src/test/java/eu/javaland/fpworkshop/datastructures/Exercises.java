@@ -24,9 +24,9 @@ public class Exercises {
 
     @Test
     void beSomeForHeadOfNonEmptyList(){
-        var list = listOf("Hello", "JavaLand");
+        List<String> list = listOf("Hello", "JavaLand");
 
-        var headOption = list.headOption();
+        Option<String> headOption = list.headOption();
 
         assertThat(headOption.isDefined(), is(true));
         assertThat(headOption.get(), is("Hello"));
@@ -34,9 +34,9 @@ public class Exercises {
 
     @Test
     void beNoneForHeadOfEmptyList(){
-        var list = listOf();
+        List<Object> list = listOf();
 
-        var headOption = list.headOption();
+        Option<Object> headOption = list.headOption();
 
         assertThat(headOption.isDefined(), is(false));
         assertThat(headOption, is(Option.none()));
@@ -47,16 +47,16 @@ public class Exercises {
     // Hint: Go by the types.
     @Test
     void beMappableFromCharactersToIntegers(){
-        var list = listOf('a', 'b');
+        List<Character> list = listOf('a', 'b');
 
-        var mappedList = list.map(character -> (int) character);
+        List<Integer> mappedList = list.map(character -> (int) character);
 
         assertThat(mappedList, equalTo(listOf(97, 98)));
     }
 
     @Test
     void beMappableFromEmptyListToEmptyList(){
-        var list = List.<Character>nil();
+        List<Character> list = List.<Character>nil();
 
         List<Integer> mappedList = list.map(character -> (int) character);
 
@@ -67,45 +67,45 @@ public class Exercises {
     // Implement a function which removes the first n items from the list
     @Test
     void droppingThreeItemsFromAListOfFourItemsShouldBeAListOfOneItem(){
-        var list = listOf(1,2,3,4);
+        List<Integer> list = listOf(1,2,3,4);
 
-        var actual = list.drop(3);
+        List<Integer> actual = list.drop(3);
 
         assertThat(actual, equalTo(listOf(4)));
     }
 
     @Test
     void droppingThreeItemsFromAnEmptyListShouldBeTheEmptyList(){
-        var list = listOf();
+        List<Object> list = listOf();
 
-        var actual = list.drop(3);
+        List<Object> actual = list.drop(3);
 
         assertThat(actual, equalTo(listOf()));
     }
 
     @Test
     void droppingThreeItemsFromAListOfTwoItemsListShouldBeTheEmptyList(){
-        var list = listOf(1, 2);
+        List<Integer> list = listOf(1, 2);
 
-        var actual = list.drop(3);
+        List<Integer> actual = list.drop(3);
 
         assertThat(actual, equalTo(listOf()));
     }
 
     @Test
     void droppingZeroItemsFromAListOfTwoItemsListShouldBeTheSameList(){
-        var list = listOf(1, 2);
+        List<Integer> list = listOf(1, 2);
 
-        var actual = list.drop(0);
+        List<Integer> actual = list.drop(0);
 
         assertThat(actual, equalTo(listOf(1, 2)));
     }
 
     @Test
     void droppingMinusTwoItemsFromAListOfTwoItemsListShouldBeTheSameList(){
-        var list = listOf(1, 2);
+        List<Integer> list = listOf(1, 2);
 
-        var actual = list.drop(-2);
+        List<Integer> actual = list.drop(-2);
 
         assertThat(actual, equalTo(listOf(1, 2)));
     }
@@ -115,18 +115,18 @@ public class Exercises {
     // Tip: Use function foldLeft
     @Test
     void sumShouldBe6ForListOneTwoThree(){
-        var list = listOf(1,2,3);
+        List<Integer> list = listOf(1,2,3);
 
-        var sum = sum(list);
+        int sum = sum(list);
 
         assertThat(sum, is(equalTo(6)));
     }
 
     @Test
     void sumShouldBe0ForEmptyList(){
-        var list = List.<Integer>listOf();
+        List<Integer> list = List.<Integer>listOf();
 
-        var sum = sum(list);
+        int sum = sum(list);
 
         assertThat(sum, is(equalTo(0)));
     }
@@ -140,18 +140,18 @@ public class Exercises {
     // Tip: Use function foldLeft
     @Test
     void productShouldBe6ForListOneTwoThree(){
-        var list = listOf(1,2,3);
+        List<Integer> list = listOf(1,2,3);
 
-        var sum = product(list);
+        int sum = product(list);
 
         assertThat(sum, is(equalTo(6)));
     }
 
     @Test
     void productShouldBe0ForEmptyList(){
-        var list = List.<Integer>listOf();
+        List<Integer> list = List.<Integer>listOf();
 
-        var sum = sum(list);
+        int sum = sum(list);
 
         assertThat(sum, is(equalTo(0)));
     }
@@ -164,7 +164,7 @@ public class Exercises {
     // Implement a function fill which contains n values supplied by the given Supplier
     @Test
     void aListFilledWithThreeTimesOneShouldBeTheSameAsAListOfThreeOnes(){
-        var list = List.fill(3, () -> 1);
+        List<Integer> list = List.fill(3, () -> 1);
 
         assertThat(list, is(equalTo(List.listOf(1,1,1))));
     }
@@ -182,12 +182,12 @@ public class Exercises {
     // it succeeds. Type Future forms a Mnoid with op = recoverWith and zero = Future.failed().
     @Test
     public void reachPaymentProviderAfterThreeTries(){
-        var maxAttempts = 5;
-        var actualInvocations = new AtomicInteger(0);
+        int maxAttempts = 5;
+        AtomicInteger actualInvocations = new AtomicInteger(0);
 
-        var future = insist(chargePaymentProviderAfterThirdTry(actualInvocations), maxAttempts);
+        Future<String> future = insist(chargePaymentProviderAfterThirdTry(actualInvocations), maxAttempts);
 
-        var result = future.get();
+        String result = future.get();
         assertThat(actualInvocations.get(), equalTo(3));
         assertThat(result, equalTo("Credit card charged"));
     }
@@ -202,9 +202,9 @@ public class Exercises {
 
     @Test
     public void exhaustRetriesWhenPaymentProviderIsNotReachable(){
-        var maxAttempts = 5;
-        var actualInvocations = new AtomicInteger(0);
-        var paymentProviderHasANonResponsiverServer = (Supplier<Future<String>>) () -> {
+        int maxAttempts = 5;
+        AtomicInteger actualInvocations = new AtomicInteger(0);
+        Supplier<Future<String>> paymentProviderHasANonResponsiverServer = (Supplier<Future<String>>) () -> {
             actualInvocations.getAndIncrement();
             return failed(new IllegalStateException("Server does not respond."));
         };

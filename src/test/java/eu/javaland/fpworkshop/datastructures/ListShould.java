@@ -12,7 +12,7 @@ public class ListShould {
 
     @Test
     void madeOfConsAndOneNil(){
-        var sentence = cons("Hello", cons("JavaLand", nil()));
+        List<String> sentence = cons("Hello", cons("JavaLand", nil()));
 
         assertThat(sentence.head(), is(equalTo("Hello")));
         assertThat(sentence.tail().head(), is(equalTo("JavaLand")));
@@ -21,9 +21,9 @@ public class ListShould {
 
     @Test
     void beCreatedWithASmartConstructor(){
-        var list = listOf("Hello", "JavaLand");
+        List<String> list = listOf("Hello", "JavaLand");
 
-        var expected = cons("Hello", cons("JavaLand", nil()));
+        List<String> expected = cons("Hello", cons("JavaLand", nil()));
 
         assertThat(list, is(equalTo(expected)));
     }

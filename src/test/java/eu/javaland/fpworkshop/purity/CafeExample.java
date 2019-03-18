@@ -19,8 +19,8 @@ public class CafeExample {
 
     @Test
     public void movingTheSideEffectAwayFromTheCore(){
-        var creditCard = new CreditCard();
-        var cafe = new Cafe();
+        CreditCard creditCard = new CreditCard();
+        Cafe cafe = new Cafe();
 
         Tuple2<Coffee, Charge> cup = cafe.buyCoffee(creditCard);
 
@@ -29,10 +29,10 @@ public class CafeExample {
 
     @Test
     public void buyMultipleCups(){
-        var creditCard = new CreditCard();
-        var cafe = new Cafe();
+        CreditCard creditCard = new CreditCard();
+        Cafe cafe = new Cafe();
 
-        var cups = cafe.buyCoffees(creditCard, 4);
+        Tuple2<List<Coffee>, Charge> cups = cafe.buyCoffees(creditCard, 4);
 
         assertThat(cups._2.price, is(equalTo(new BigDecimal(4))));
         assertThat(cups._2.creditCard, is(equalTo(creditCard)));
@@ -40,24 +40,24 @@ public class CafeExample {
 
     @Test
     public void americanExpressSometimesTimesOut(){
-        var americanExpress = PaymentProvider.americanExpress();
-        var creditCard = new CreditCard();
-        var cafe = new Cafe();
+        PaymentProvider americanExpress = PaymentProvider.americanExpress();
+        CreditCard creditCard = new CreditCard();
+        Cafe cafe = new Cafe();
 
-        var cups = cafe.buyCoffees(creditCard, 4);
+        Tuple2<List<Coffee>, Charge> cups = cafe.buyCoffees(creditCard, 4);
 
         americanExpress.process(cups._2);
     }
 
     class Cafe {
         Tuple2<Coffee, Charge> buyCoffee(CreditCard creditCard) {
-            var cup = new Coffee();
+            Coffee cup = new Coffee();
             return Tuple.of(cup, Charge.of(creditCard, cup.price));
         }
 
         Tuple2<List<Coffee>, Charge> buyCoffees(CreditCard creditCard, int n) {
-            var purchases = List.fill(n, buyCoffee(creditCard));
-            var coffeesAndCharges = purchases.unzip(Function.identity());
+            List<Tuple2<Coffee, Charge>> purchases = List.fill(n, buyCoffee(creditCard));
+            Tuple2<List<Coffee>, List<Charge>> coffeesAndCharges = purchases.unzip(Function.identity());
             return coffeesAndCharges.map2(charges -> charges.reduce(Charge::combine));
         }
     }

@@ -13,8 +13,8 @@ import static io.vavr.API.TODO;
 interface List<E> {
 
     static <E> List<E> listOf(E... elements){
-        var list = List.<E>nil();
-        for(var i = elements.length-1; i >= 0; i--){
+        List<E> list = List.<E>nil();
+        for(int i = elements.length-1; i >= 0; i--){
             list = cons(elements[i], list);
         }
         return list;

@@ -25,7 +25,7 @@ public class Exercises {
     }
 
     Function<Integer, Integer> makeAdder(int a) {
-        return TODO();
+        return b -> a + b;
     }
 
     // Exercise 2
@@ -42,7 +42,7 @@ public class Exercises {
     }
 
     private Function<String, Function<String, String>> curried(BiFunction<String, String, String> concat) {
-        return TODO();
+        return a -> b -> concat.apply(a, b);
     }
 
     // Exercise 3
@@ -60,7 +60,7 @@ public class Exercises {
     }
 
     private Function<Integer, Integer> compose(Function<Integer, Integer> f, Function<Integer, Integer> g) {
-        return TODO();
+        return a -> f.apply(g.apply(a));
     }
 
     @Test
@@ -72,7 +72,7 @@ public class Exercises {
     }
 
     private Function<Integer, Integer> andThen(Function<Integer, Integer> f, Function<Integer, Integer> g) {
-        return TODO();
+        return a -> g.apply(f.apply(a));
     }
 
     // Exercise 4
@@ -89,6 +89,6 @@ public class Exercises {
     }
 
     private Function1<Integer, Integer> createPartialApplicatedFunction(Function1<Integer, Function1<Integer, Integer>> func, Integer operand1) {
-        return TODO();
+        return func.apply(operand1);
     }
 }

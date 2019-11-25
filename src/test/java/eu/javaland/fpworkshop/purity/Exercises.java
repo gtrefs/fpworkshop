@@ -7,6 +7,7 @@ import io.vavr.API;
 import io.vavr.Function1;
 import io.vavr.collection.List;
 import io.vavr.concurrent.Future;
+import io.vavr.control.Try;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -22,6 +23,8 @@ public class Exercises {
     // Exercise 1
     // Is expression add(one, two) pure?
     // Describe why and/or why not.
+
+    // add is pure, everything what the function does is expressed by the returned value
     @Test
     public void addition() {
         var one = 1;
@@ -39,6 +42,8 @@ public class Exercises {
     // Exercise 2
     // Is expression divide(one, zero) pure?
     // Describe why and/or why not.
+
+    // division is not pure, the ArithmeticException is not represented in the returned value.
     @Test
     public void division(){
         var zero = 0;
@@ -57,13 +62,15 @@ public class Exercises {
     // Do you know a way how to make divide a pure function?
     // Hint: Think about using a type representing a try of a division.
 
-    // private ??? divide2(int a, int b) {
-    //     return TODO();
-    // }
+    private Try<Integer> divide2(int a, int b) {
+         return Try.of(() -> divide(a, b));
+    }
 
     // Exercise 4
     // Is expression checkout(charges) a pure function?
     // Describe why and/or why not.
+
+    // No, the function is not pure. It returns void. The only way this function could do something is by side effects.
     @Test
     public void checkoutThreeCoffees(){
         var creditCard = new CreditCard();
@@ -107,7 +114,7 @@ public class Exercises {
     }
 
     private Future<Clearance> checkout2(List<Charge> charges, Function1<Charge, Clearance> paymentProvider){
-        return TODO();
+        return Future.of(() -> paymentProvider.apply(charges.reduce(Charge::combine)));
     }
 
     private interface Clearance {
@@ -184,4 +191,7 @@ public class Exercises {
     // Exercise 6
     // In Exercise 4 we used Future to represent the result of a future computation.
     // Does this violate purity? Discuss this with your pair.
+
+    // Yes, it is. Type future represents any result of the action. That is, Future contains the result of the thing
+    // which happens in the future.
 }

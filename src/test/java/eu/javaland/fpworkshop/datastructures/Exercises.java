@@ -132,7 +132,7 @@ public class Exercises {
     }
 
     private int sum(List<Integer> list) {
-        return TODO();
+        return list.foldLeft(0, Integer::sum);
     }
 
     // Exercise 5
@@ -157,7 +157,7 @@ public class Exercises {
     }
 
     private int product(List<Integer> list) {
-        return TODO();
+        return list.foldLeft(1, (acc, element) -> acc * element);
     }
 
     // Exercise 6
@@ -171,7 +171,7 @@ public class Exercises {
 
     // Exercise 7
     // Consider the implementations of sum and product.
-    // We say a type A, a function op and an element zero of A form Monoid, if and only if
+    // We say a type A, a function op and an element zero of A form a Monoid, if and only if
     // * op(op(x, y), z) == op(x, op(y, z)) for any x, y and z of type A
     // * op(zero, x) == op(x, zero) for any x of type A
     // For sum this is: Type = Integer, op = + and zero = 0
@@ -179,7 +179,7 @@ public class Exercises {
     // Whenever there there is a Monoid, it can be used to fold a list.
     //
     // Implement a function insists which repeats an asynchronous operation n times or until
-    // it succeeds. Type Future forms a Mnoid with op = recoverWith and zero = Future.failed().
+    // it succeeds. Type Future forms a Monoid with op = recoverWith and zero = Future.failed().
     @Test
     public void reachPaymentProviderAfterThreeTries(){
         var maxAttempts = 5;
@@ -215,7 +215,9 @@ public class Exercises {
     }
 
     public <A> Future<A> insist(Supplier<Future<A>> asyncComputation, int maxAttempts) {
-        return TODO();
+        IllegalStateException zero = new IllegalStateException("Could not complete computation after "+maxAttempts+" attempts.");
+        return List.fill(maxAttempts, () -> asyncComputation)
+                .foldLeft(Future.failed(zero), (last, current) -> last.recoverWith(ex -> current.get()));
     }
 
 }

@@ -33,15 +33,15 @@ interface List<E> {
     }
 
     default List<E> tail(){
-        if(this instanceof List.Cons){
-            return ((Cons<E>) this).tail;
+        if(this instanceof List.Cons<E> list){
+            return list.tail;
         }
         return Nil.instance();
     }
 
     default E head(){
-        if(this instanceof List.Cons){
-            return ((Cons<E>) this).head;
+        if(this instanceof List.Cons<E> list){
+            return list.head;
         }
         throw new NoSuchElementException("head of empty list");
     }
@@ -85,5 +85,5 @@ interface List<E> {
     }
 
     record Cons<A>(A head, List<A> tail) implements List<A>{}
-    
+
 }

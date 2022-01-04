@@ -84,35 +84,6 @@ interface List<E> {
         }
     }
 
-    final class Cons<A> implements List<A> {
-        public final A head;
-        public final List<A> tail;
-
-        public Cons(A head, List<A> tail){
-            this.head = head;
-            this.tail = tail;
-        }
-
-        @Override
-        public String toString() {
-            return "Cons{" +
-                    "head=" + head +
-                    ", tail=" + tail +
-                    '}';
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Cons<?> cons = (Cons<?>) o;
-            return Objects.equals(head, cons.head) &&
-                    Objects.equals(tail, cons.tail);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(head, tail);
-        }
-    }
+    record Cons<A>(A head, List<A> tail) implements List<A>{}
+    
 }

@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 
 import static io.vavr.API.TODO;
 
-interface List<E> {
+sealed interface List<E> {
 
     static <E> List<E> listOf(E... elements){
         var list = List.<E>nil();

@@ -4,8 +4,8 @@ ports:
   - port: 8080
     onOpen: open-browser
 tasks:
-  - init: ./mvnw package -DskipTests # runs during prebuild
-    command: java -jar target/*.jar
+  - name: "Build project"
+    command: ./gradlew clean build
 vscode:
   extensions:
     - vscjava.vscode-java-pack

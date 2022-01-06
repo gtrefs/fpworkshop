@@ -30,7 +30,4 @@ tasks.named<Test>("test") {
     useJUnitPlatform {
         includeEngines("jqwik", "junit-jupiter")
     }
-    include("**/*Properties.class")
-	include("**/*Test.class")
-	include("**/*Tests.class")
 }

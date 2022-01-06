@@ -1,14 +1,13 @@
 package eu.javaland.fpworkshop.datastructures;
 
-import io.vavr.Function1;
-import io.vavr.control.Option;
+import static io.vavr.API.TODO;
 
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
-import static io.vavr.API.TODO;
+import io.vavr.Function1;
+import io.vavr.control.Option;
 
 sealed interface List<E> {
 

@@ -9,7 +9,6 @@ import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.function.Function;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -49,10 +48,10 @@ public class CafeExample {
         americanExpress.process(cups._2);
     }
 
-    class Cafe {
+    static class Cafe {
         Tuple2<Coffee, Charge> buyCoffee(CreditCard creditCard) {
             var cup = new Coffee();
-            return Tuple.of(cup, Charge.of(creditCard, cup.price));
+            return Tuple.of(cup, new Charge(creditCard, cup.price));
         }
 
         Tuple2<List<Coffee>, Charge> buyCoffees(CreditCard creditCard, int n) {
@@ -62,53 +61,20 @@ public class CafeExample {
         }
     }
 
-    class Coffee {
+    static class Coffee {
         BigDecimal price = new BigDecimal(1);
     }
 
-    static class CreditCard {
+    record CreditCard() {
     }
 
-    static class Charge {
-        public final CreditCard creditCard;
-        public final BigDecimal price;
-
-        private Charge(CreditCard creditCard, BigDecimal price) {
-            this.creditCard = creditCard;
-            this.price = price;
-        }
-
-        static Charge of(CreditCard creditCard, BigDecimal price) {
-            return new Charge(creditCard, price);
-        }
+    record Charge(CreditCard creditCard, BigDecimal price) {
 
         Charge combine(Charge other) {
-            if(creditCard.equals(other.creditCard)) {
+            if (creditCard.equals(other.creditCard)) {
                 return new Charge(creditCard, price.add(other.price));
             }
             throw new IllegalArgumentException("Can't combine charges to different cards");
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Charge charge = (Charge) o;
-            return Objects.equals(creditCard, charge.creditCard) &&
-                    Objects.equals(price, charge.price);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(creditCard, price);
-        }
-
-        @Override
-        public String toString() {
-            return "Charge{" +
-                    "creditCard=" + creditCard +
-                    ", price=" + price +
-                    '}';
         }
     }
 

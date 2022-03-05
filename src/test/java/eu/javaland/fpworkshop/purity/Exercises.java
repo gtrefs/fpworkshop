@@ -67,7 +67,7 @@ public class Exercises {
     @Test
     public void checkoutThreeCoffees(){
         var creditCard = new CreditCard();
-        var charges = List.fill(3, () -> Charge.of(creditCard, new BigDecimal(1)));
+        var charges = List.fill(3, () -> new Charge(creditCard, new BigDecimal(1)));
 
         checkout(charges);
     }
@@ -87,19 +87,19 @@ public class Exercises {
     @Test
     public void checkoutFailsInTheFuture(){
         var creditCard = new CreditCard();
-        var charges = List.fill(3, Charge.of(creditCard, new BigDecimal(1)));
+        var charges = List.fill(3, new Charge(creditCard, new BigDecimal(1)));
         var paymentProvider = API.<Charge, Clearance>Function(charge -> Clearance.uncleared(charge, "Could not reach server"));
 
         var clearance = checkout2(charges, paymentProvider);
 
-        assertThat(clearance.get(), equalTo(Clearance.uncleared(Charge.of(creditCard, new BigDecimal(3)), "Could not reach server")));
+        assertThat(clearance.get(), equalTo(Clearance.uncleared(new Charge(creditCard, new BigDecimal(3)), "Could not reach server")));
     }
 
     @Test
     public void checkoutSucceedsWithADifferentPaymentProvider(){
         var creditCard = new CreditCard();
-        var charges = List.fill(3, Charge.of(creditCard, new BigDecimal(1)));
-        var paymentProvider = API.<Charge, Clearance>Function(charge -> Clearance.cleared(charge.price));
+        var charges = List.fill(3, new Charge(creditCard, new BigDecimal(1)));
+        var paymentProvider = API.<Charge, Clearance>Function(charge -> Clearance.cleared(charge.price()));
 
         var clearance = checkout2(charges, paymentProvider);
 

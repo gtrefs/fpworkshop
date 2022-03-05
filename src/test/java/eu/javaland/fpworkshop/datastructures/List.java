@@ -67,22 +67,14 @@ sealed interface List<E> {
         return result;
     }
 
-    final class Nil<A> implements List<A> {
+    record Nil<A>() implements List<A> {
         private static final Nil<?> instance = new Nil<>();
-
-        private Nil(){}
 
         @SuppressWarnings("unchecked")
         public static <B> List<B> instance(){
             return (List<B>) instance;
         }
-
-        @Override
-        public String toString() {
-            return "Nil{}";
-        }
     }
 
     record Cons<A>(A head, List<A> tail) implements List<A>{}
-
 }

@@ -1,6 +1,5 @@
 package eu.javaland.fpworkshop.purity;
 
-
 import eu.javaland.fpworkshop.purity.CafeExample.Charge;
 import eu.javaland.fpworkshop.purity.CafeExample.CreditCard;
 import io.vavr.API;

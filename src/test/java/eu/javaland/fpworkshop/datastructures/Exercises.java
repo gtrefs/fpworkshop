@@ -176,10 +176,10 @@ public class Exercises {
     // * op(zero, x) == op(x, zero) for any x of type A
     // For sum this is: Type = Integer, op = + and zero = 0
     // For product this is: Type = Integer, op = * and zero = 1
-    // Whenever there there is a Monoid, it can be used to fold a list.
+    // Whenever there is a Monoid, it can be used to fold a list.
     //
     // Implement a function insists which repeats an asynchronous operation n times or until
-    // it succeeds. Type Future forms a Mnoid with op = recoverWith and zero = Future.failed().
+    // it succeeds. Type Future forms a Monoid with op = recoverWith and zero = Future.failed().
     @Test
     public void reachPaymentProviderAfterThreeTries(){
         var maxAttempts = 5;

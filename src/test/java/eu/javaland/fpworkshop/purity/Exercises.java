@@ -110,74 +110,18 @@ public class Exercises {
         return TODO();
     }
 
-    private interface Clearance {
-
+    sealed interface Clearance {
         static Clearance cleared(BigDecimal amount){
             return new Cleared(amount);
         }
-
         static Clearance uncleared(Charge charge, String reason){
             return new Uncleared(charge, reason);
         }
-    }
 
-    private static final class Cleared implements Clearance {
-        final BigDecimal payed;
-
-        private Cleared(BigDecimal payed) {
-            this.payed = payed;
+        record Cleared(BigDecimal payed) implements Clearance {
         }
 
-        @Override
-        public String toString() {
-            return "Cleared{" +
-                    "payed=" + payed +
-                    '}';
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Cleared cleared = (Cleared) o;
-            return Objects.equals(payed, cleared.payed);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(payed);
-        }
-    }
-
-    private static final class Uncleared implements Clearance {
-        final Charge charge;
-        final String reason;
-
-        private Uncleared(Charge charge, String reason) {
-            this.charge = charge;
-            this.reason = reason;
-        }
-
-        @Override
-        public String toString() {
-            return "Uncleared{" +
-                    "charge=" + charge +
-                    ", reason='" + reason + '\'' +
-                    '}';
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            Uncleared uncleared = (Uncleared) o;
-            return Objects.equals(charge, uncleared.charge) &&
-                    Objects.equals(reason, uncleared.reason);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(charge, reason);
+        record Uncleared(Charge charge, String reason) implements Clearance {
         }
     }
 

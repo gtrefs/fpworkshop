@@ -103,10 +103,8 @@ public class Exercises {
         public Optional<String> query(Query query){
             return cache.compute(query, (key, value) -> {
                 if(value != null){
-                    Statistics.label("Cache").collect("hit");
                     return value;
                 }
-                Statistics.label("Cache").collect("miss");
                 return query.run(database);
             }).liftToOptional();
         }

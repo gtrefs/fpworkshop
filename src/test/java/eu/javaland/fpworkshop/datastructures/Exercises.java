@@ -132,7 +132,7 @@ public class Exercises {
     }
 
     private int sum(List<Integer> list) {
-        return TODO();
+        return list.foldLeft(0, Integer::sum);
     }
 
     // Exercise 5
@@ -151,13 +151,13 @@ public class Exercises {
     void productShouldBe0ForEmptyList(){
         var list = List.<Integer>listOf();
 
-        var sum = sum(list);
+        var sum = product(list);
 
-        assertThat(sum, is(equalTo(0)));
+        assertThat(sum, is(equalTo(1)));
     }
 
     private int product(List<Integer> list) {
-        return TODO();
+        return list.foldLeft(1, (acc, b) -> acc * b);
     }
 
     // Exercise 6
@@ -215,7 +215,9 @@ public class Exercises {
     }
 
     public <A> Future<A> insist(Supplier<Future<A>> asyncComputation, int maxAttempts) {
-        return TODO();
+        var zero = new IllegalStateException("Could not complete computation after "+maxAttempts+" attempts.");
+        return List.fill(maxAttempts, () -> asyncComputation)
+                .foldLeft(Future.failed(zero), (last, current) -> last.recoverWith(ex -> current.get()));
     }
 
 }

@@ -3,7 +3,9 @@ package eu.javaland.fpworkshop.propertybasedtesting;
 import eu.javaland.fpworkshop.propertybasedtesting.Exercises.DataAccessLayer.Query;
 import eu.javaland.fpworkshop.propertybasedtesting.Exercises.DataAccessLayer.QueryResult.Success;
 import net.jqwik.api.*;
+import net.jqwik.api.statistics.Histogram;
 import net.jqwik.api.statistics.Statistics;
+import net.jqwik.api.statistics.StatisticsReport;
 
 import java.util.Collections;
 import java.util.List;
@@ -11,13 +13,12 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static io.vavr.API.TODO;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class Exercises {
 
 
-    // Gaol is to showcase real world examples on how property based testing can help. For example, it would be useful
+    // Goal is to showcase real world examples on how property based testing can help. For example, it would be useful
     // to use Property Based Testing for refactoring. Further, it would be nice to also able handle stateful applications.
 
     // 1. Is the following property a good property for a list reversal algorithm?
@@ -30,6 +31,24 @@ public class Exercises {
         Collections.reverse(list);
 
         assertThat(copy).isEqualTo(list);
+    }
+
+    @Property
+    @StatisticsReport(format = Histogram.class)
+    public void maxMustBeMin(@ForAll List<String> list){
+        Statistics.label("length").collect(list.size());
+        Assume.that(list.size() > 0);
+
+        var copy = List.copyOf(list);
+        Collections.reverse(list);
+
+        assertThat(copy.get(0)).isEqualTo(list.get(list.size() - 1));
+    }
+
+
+    @Example
+    public void xxx(){
+
     }
 
     // 2. Modelling / Refactoring
@@ -53,7 +72,7 @@ public class Exercises {
     static class ToBeReFactored {
 
         public String reallyBadCode(int number) {
-            return TODO();
+            return number > 10 && number < 20 ? "Nice" : "Not so so nice";
         }
         public String reallyBadCodeModel(int number){
             if(number > 10){
@@ -79,9 +98,14 @@ public class Exercises {
     // take the idea of fuzzing and add the statistics to it. For example, after reworking a data access layer, what
     // is the improvement of avoiding unnecessary database calls (Caching)?
 
+    // Please add a cache and record if there was a cache miss or a cache hit. You can use the Statistics class from
+    // jqwik to monitor hits and misses. A good candidate for a cache would be a ConcurrentHashMap. The compute method
+    // guarantees atomic access to the keys and lets you run a computation creating the value.
+
     DataAccessLayer database = new DataAccessLayer(new DataAccessLayer.Database());
 
     @Property
+    @StatisticsReport(format = Histogram.class)
     public void collectStatistics(@ForAll("queries") Query query){
         Optional<String> queryResult = database.query(query);
     }
@@ -102,11 +126,13 @@ public class Exercises {
 
         public Optional<String> query(Query query){
             return cache.compute(query, (key, value) -> {
-                if(value != null){
-                    return value;
+                if(value == null){
+                    Statistics.label("Cache").collect("miss");
+                    return query.run(database);
                 }
-                return query.run(database);
-            }).liftToOptional();
+                Statistics.label("Cache").collect("hit");
+                return value;
+            }).toOptional();
         }
 
         record Query(String query) {
@@ -119,7 +145,7 @@ public class Exercises {
             record Success<T>(T result) implements QueryResult<T>{}
             record Failure() implements QueryResult<Void>{}
 
-            default Optional<T> liftToOptional(){
+            default Optional<T> toOptional(){
                 if(this instanceof QueryResult.Success<T> success){
                     return Optional.ofNullable(success.result);
                 }

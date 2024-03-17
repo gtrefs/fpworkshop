@@ -6,6 +6,7 @@ import io.vavr.API;
 import io.vavr.Function1;
 import io.vavr.collection.List;
 import io.vavr.concurrent.Future;
+import io.vavr.control.Try;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -56,9 +57,9 @@ public class Exercises {
     // Do you know a way how to make divide a pure function?
     // Hint: Think about using a type representing a try of a division.
 
-    // private ??? divide2(int a, int b) {
-    //     return TODO();
-    // }
+    private Try<Integer> divide2(int a, int b) {
+         return Try.of(() -> a / b);
+    }
 
     // Exercise 4
     // Is expression checkout(charges) a pure function?
@@ -106,7 +107,7 @@ public class Exercises {
     }
 
     private Future<Clearance> checkout2(List<Charge> charges, Function1<Charge, Clearance> paymentProvider){
-        return TODO();
+        return Future.of(() -> paymentProvider.apply(charges.reduce((charge1, charge2) -> charge1.combine(charge2))));
     }
 
     sealed interface Clearance {
@@ -125,6 +126,6 @@ public class Exercises {
     }
 
     // Exercise 6
-    // In Exercise 4 we used Future to represent the result of a future computation.
+    // In Exercise 5 we used Future to represent the result of a future computation.
     // Does this violate purity? Discuss this with your pair.
 }

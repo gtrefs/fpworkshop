@@ -28,7 +28,8 @@ sealed interface List<E> {
     }
 
     static <E> List<E> fill(int n, Supplier<E> supplier) {
-        return TODO();
+        if(n <= 0) return nil();
+        return cons(supplier.get(), fill(n-1, supplier));
     }
 
     default List<E> tail(){
@@ -46,15 +47,20 @@ sealed interface List<E> {
     }
 
     default Option<E> headOption(){
-        return TODO();
+        if(this instanceof List.Cons<E> list){
+            return Option.of(list.head);
+        }
+        return Option.none();
     }
 
     default <T> List<T> map(Function1<? super E, ? extends T> mapper){
-        return TODO();
+        if(this instanceof List.Nil<E>) return nil();
+        return cons(mapper.apply(head()), tail().map(mapper));
     }
 
     default List<E> drop(int n) {
-        return TODO();
+        if(n <= 0) return this;
+        return tail().drop(n - 1);
     }
 
     default <U> U foldLeft(U zero, BiFunction<? super U, ? super E, ? extends U> f){

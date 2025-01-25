@@ -30,14 +30,13 @@ public class KafkaProperties {
 
 
     @Property(tries = 10)
-    public void readWhatYouWrite(@ForAll List<@AlphaChars String> message){
-        message.forEach(this::sendAndAwait);
-        appendOnlyQueueAsModel.addAll(message);
+    public void readWhatYouWrite(@ForAll List<@AlphaChars String> messages){
+        messages.forEach(message -> kafkaContainer.sendAndAwait(currentTopicName(), message));
+        appendOnlyQueueAsModel.addAll(messages);
 
         var fromTopic = kafkaContainer.getMessagesFromTopic(currentTopicName(), Duration.ofSeconds(10));
 
-        Statistics.label("Message size").collect(message.size());
-        System.out.println(message.size());
+        Statistics.label("Message size").collect(messages.size());
         Statistics.label("Messages from Kafka").collect(fromTopic.size());
         Statistics.label("Messages from Map").collect(appendOnlyQueueAsModel.size());
         assertThat(fromTopic).hasSameElementsAs(appendOnlyQueueAsModel);
@@ -45,14 +44,13 @@ public class KafkaProperties {
 
 
     @Property(tries = 10)
-    public void readWhatYouWriteWithLargeInputs(@ForAll @Size(min = 450, max = 550)  List<@AlphaChars String> message){
-        message.forEach(this::sendAndAwait);
-        appendOnlyQueueAsModel.addAll(message);
+    public void readWhatYouWriteWithLargeInputs(@ForAll @Size(min = 500, max = 550)  List<@AlphaChars String> messages){
+        messages.forEach(message -> kafkaContainer.sendAndAwait(currentTopicName(), message));
+        appendOnlyQueueAsModel.addAll(messages);
 
         var fromTopic = kafkaContainer.getMessagesFromTopic(currentTopicName(), Duration.ofSeconds(10));
 
-        Statistics.label("Message size").collect(message.size());
-        System.out.println(message.size());
+        Statistics.label("Message size").collect(messages.size());
         Statistics.label("Messages from Kafka").collect(fromTopic.size());
         Statistics.label("Messages from Map").collect(appendOnlyQueueAsModel.size());
         assertThat(fromTopic).hasSameElementsAs(appendOnlyQueueAsModel);
@@ -73,13 +71,5 @@ public class KafkaProperties {
 
     String currentTopicName() {
         return topicName + topicCounter.get();
-    }
-
-    private void sendAndAwait(String message) {
-        try {
-            kafkaContainer.send(currentTopicName(), message).get();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 }

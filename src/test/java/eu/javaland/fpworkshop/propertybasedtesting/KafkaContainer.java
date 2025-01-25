@@ -47,6 +47,14 @@ public class KafkaContainer extends org.testcontainers.containers.KafkaContainer
 
     private final Map<String, KafkaProducer<byte[], String>> topicToProducer = new HashMap<>();
 
+    public RecordMetadata sendAndAwait(String topic, String message) {
+        try {
+            return send(topic, message).get();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public Future<RecordMetadata> send(String topic, String event) {
         final KafkaProducer<byte[], String> producer = reuseExistingProducerOrCreateNewOne(topic);
         return producer.send(new ProducerRecord<>(topic, event));

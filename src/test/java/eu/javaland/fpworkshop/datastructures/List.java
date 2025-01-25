@@ -1,13 +1,13 @@
 package eu.javaland.fpworkshop.datastructures;
 
-import static io.vavr.API.TODO;
+import io.vavr.Function1;
+import io.vavr.control.Option;
 
 import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
-import io.vavr.Function1;
-import io.vavr.control.Option;
+import static io.vavr.API.TODO;
 
 sealed interface List<E> {
 
@@ -28,8 +28,7 @@ sealed interface List<E> {
     }
 
     static <E> List<E> fill(int n, Supplier<E> supplier) {
-        if(n <= 0) return nil();
-        return cons(supplier.get(), fill(n-1, supplier));
+        return TODO();
     }
 
     default List<E> tail(){
@@ -47,20 +46,15 @@ sealed interface List<E> {
     }
 
     default Option<E> headOption(){
-        if(this instanceof List.Cons<E> list){
-            return Option.of(list.head);
-        }
-        return Option.none();
+        return TODO();
     }
 
     default <T> List<T> map(Function1<? super E, ? extends T> mapper){
-        if(this instanceof List.Nil<E>) return nil();
-        return cons(mapper.apply(head()), tail().map(mapper));
+        return TODO();
     }
 
     default List<E> drop(int n) {
-        if(n <= 0) return this;
-        return tail().drop(n - 1);
+        return TODO();
     }
 
     default <U> U foldLeft(U zero, BiFunction<? super U, ? super E, ? extends U> f){

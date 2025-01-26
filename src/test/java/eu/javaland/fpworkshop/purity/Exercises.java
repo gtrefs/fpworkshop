@@ -57,9 +57,9 @@ public class Exercises {
     // Do you know a way how to make divide a pure function?
     // Hint: Think about using a type representing a try of a division.
 
-    private Try<Integer> divide2(int a, int b) {
-         return Try.of(() -> a / b);
-    }
+    // private ??? divide2(int a, int b) {
+    //     return TODO();
+    // }
 
     // Exercise 4
     // Is expression checkout(charges) a pure function?
@@ -107,7 +107,7 @@ public class Exercises {
     }
 
     private Future<Clearance> checkout2(List<Charge> charges, Function1<Charge, Clearance> paymentProvider){
-        return Future.of(() -> paymentProvider.apply(charges.reduce((charge1, charge2) -> charge1.combine(charge2))));
+        return TODO();
     }
 
     sealed interface Clearance {

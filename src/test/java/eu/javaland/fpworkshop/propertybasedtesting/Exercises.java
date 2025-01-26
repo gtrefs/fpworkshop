@@ -9,10 +9,12 @@ import net.jqwik.api.statistics.StatisticsReport;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static io.vavr.API.TODO;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class Exercises {
@@ -37,12 +39,12 @@ public class Exercises {
     @StatisticsReport(format = Histogram.class)
     public void maxMustBeMin(@ForAll List<String> list){
         Statistics.label("length").collect(list.size());
-        Assume.that(list.size() > 0);
+        Assume.that(!list.isEmpty());
 
         var copy = List.copyOf(list);
         Collections.reverse(list);
 
-        assertThat(copy.get(0)).isEqualTo(list.get(list.size() - 1));
+        assertThat(copy.getFirst()).isEqualTo(list.getLast());
     }
 
 
@@ -72,7 +74,7 @@ public class Exercises {
     static class ToBeReFactored {
 
         public String reallyBadCode(int number) {
-            return number > 10 && number < 20 ? "Nice" : "Not so so nice";
+            return TODO();
         }
         public String reallyBadCodeModel(int number){
             if(number > 10){
@@ -125,14 +127,7 @@ public class Exercises {
         }
 
         public Optional<String> query(Query query){
-            return cache.compute(query, (key, value) -> {
-                if(value == null){
-                    Statistics.label("Cache").collect("miss");
-                    return query.run(database);
-                }
-                Statistics.label("Cache").collect("hit");
-                return value;
-            }).toOptional();
+            return cache.compute(query, (key, value) -> Objects.requireNonNullElseGet(value, () -> query.run(database))).toOptional();
         }
 
         record Query(String query) {
@@ -146,10 +141,10 @@ public class Exercises {
             record Failure() implements QueryResult<Void>{}
 
             default Optional<T> toOptional(){
-                if(this instanceof QueryResult.Success<T> success){
-                    return Optional.ofNullable(success.result);
-                }
-                return Optional.empty();
+                return switch (this) {
+                    case QueryResult.Success<T>(T result) -> Optional.ofNullable(result);
+                    default -> Optional.empty();
+                };
             }
         }
 

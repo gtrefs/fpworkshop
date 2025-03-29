@@ -43,28 +43,87 @@ public class Exercises {
     }
 
     // Exercise 2
-    // Implement a function which maps each value to another value.
-    // Hint: Go by the types.
-    @Test
-    void beMappableFromCharactersToIntegers(){
-        var list = listOf('a', 'b');
-
-        var mappedList = list.map(character -> (int) character);
-
-        assertThat(mappedList, equalTo(listOf(97, 98)));
-    }
+    // Implement a function fill which contains n values supplied by the given Supplier
 
     @Test
-    void beMappableFromEmptyListToEmptyList(){
-        var list = List.<Character>nil();
+    void aListFilledWithThreeTimesOneShouldBeTheSameAsAListOfThreeOnes(){
+        var list = List.fill(3, () -> 1);
 
-        List<Integer> mappedList = list.map(character -> (int) character);
-
-        assertThat(mappedList, equalTo(List.<Integer>nil()));
+        assertThat(list, is(equalTo(List.listOf(1,1,1))));
     }
 
     // Exercise 3
+    // Implement a function sum which computes the sum of a list of integers
+    // Tip: Use function foldLeft
+    @Test
+    void sumShouldBe6ForListOneTwoThree(){
+        var list = listOf(1,2,3);
+
+        var sum = sum(list);
+
+        assertThat(sum, is(equalTo(6)));
+    }
+
+    @Test
+    void sumShouldBe0ForEmptyList(){
+        var list = List.<Integer>listOf();
+
+        var sum = sum(list);
+
+        assertThat(sum, is(equalTo(0)));
+    }
+
+    private int sum(List<Integer> list) {
+        return list.foldLeft(0, Integer::sum);
+    }
+
+    // Exercise 4
+    // We say a type A, a function op and an element zero of A form Monoid, if and only if
+    // * op(op(x, y), z) == op(x, op(y, z)) for any x, y and z of type A
+    // * op(zero, x) == op(x, zero) == x for any x of type A
+    // For sum this is: Type = Integer, op = + and zero = 0
+    // For product this is: Type = Integer, op = * and zero = 1
+    // Whenever there is a Monoid, it can be used to fold a list.
+    //
+    // Implement a function insists which repeats an asynchronous operation n times or until
+    // it succeeds. Type Future forms a Monoid with op = recoverWith and zero = Future.failed().
+    @Test
+    public void reachPaymentProviderAfterThreeTries(){
+        var maxAttempts = 5;
+        var actualInvocations = new AtomicInteger(0);
+
+        var future = insist(chargePaymentProviderAfterThirdTry(actualInvocations), maxAttempts);
+
+        var result = future.get();
+        assertThat(actualInvocations.get(), equalTo(3));
+        assertThat(result, equalTo("Credit card charged"));
+    }
+
+    private Supplier<Future<String>> chargePaymentProviderAfterThirdTry(AtomicInteger actualInvocations) {
+        return () -> actualInvocations.incrementAndGet() >= 3 ? successful("Credit card charged") : failed(new IllegalStateException("Server does not respond."));
+    }
+
+    @Test
+    public void exhaustRetriesWhenPaymentProviderIsNotReachable(){
+        var maxAttempts = 5;
+        var actualInvocations = new AtomicInteger(0);
+        var paymentProviderHasANonResponsiveServer = (Supplier<Future<String>>) () -> {
+            actualInvocations.getAndIncrement();
+            return failed(new IllegalStateException("Server does not respond."));
+        };
+
+        insist(paymentProviderHasANonResponsiveServer, maxAttempts).await();
+
+        assertThat(actualInvocations.get(), equalTo(maxAttempts));
+    }
+
+    public <A> Future<A> insist(Supplier<Future<A>> asyncComputation, int maxAttempts) {
+        return TODO();
+    }
+
+    // (Optional) Exercise 5
     // Implement a function which removes the first n items from the list
+
     @Test
     void droppingThreeItemsFromAListOfFourItemsShouldBeAListOfOneItem(){
         var list = listOf(1,2,3,4);
@@ -110,114 +169,29 @@ public class Exercises {
         assertThat(actual, equalTo(listOf(1, 2)));
     }
 
-    // Exercise 4
-    // Implement a function sum which computes the sum of a list of integers
-    // Tip: Use function foldLeft
-    @Test
-    void sumShouldBe6ForListOneTwoThree(){
-        var list = listOf(1,2,3);
 
-        var sum = sum(list);
 
-        assertThat(sum, is(equalTo(6)));
-    }
+    // (Optional) Exercise 6
+    // Implement a function which maps each value to another value.
+    // Hint: Go by the types.
 
     @Test
-    void sumShouldBe0ForEmptyList(){
-        var list = List.<Integer>listOf();
+    void beMappableFromCharactersToIntegers(){
+        var list = listOf('a', 'b');
 
-        var sum = sum(list);
+        var mappedList = list.map(character -> (int) character);
 
-        assertThat(sum, is(equalTo(0)));
-    }
-
-    private int sum(List<Integer> list) {
-        return list.foldLeft(0, Integer::sum);
-    }
-
-    // Exercise 5
-    // Implement a function product which computes the sum of a list of integers
-    // Tip: Use function foldLeft
-    @Test
-    void productShouldBe6ForListOneTwoThree(){
-        var list = listOf(1,2,3);
-
-        var sum = product(list);
-
-        assertThat(sum, is(equalTo(6)));
+        assertThat(mappedList, equalTo(listOf(97, 98)));
     }
 
     @Test
-    void productShouldBe0ForEmptyList(){
-        var list = List.<Integer>listOf();
+    void beMappableFromEmptyListToEmptyList(){
+        var list = List.<Character>nil();
 
-        var sum = product(list);
+        List<Integer> mappedList = list.map(character -> (int) character);
 
-        assertThat(sum, is(equalTo(1)));
+        assertThat(mappedList, equalTo(List.<Integer>nil()));
     }
 
-    private int product(List<Integer> list) {
-        return list.foldLeft(1, (acc, b) -> acc * b);
-    }
-
-    // Exercise 6
-    // Implement a function fill which contains n values supplied by the given Supplier
-    @Test
-    void aListFilledWithThreeTimesOneShouldBeTheSameAsAListOfThreeOnes(){
-        var list = List.fill(3, () -> 1);
-
-        assertThat(list, is(equalTo(List.listOf(1,1,1))));
-    }
-
-    // Exercise 7
-    // Consider the implementations of sum and product.
-    // We say a type A, a function op and an element zero of A form Monoid, if and only if
-    // * op(op(x, y), z) == op(x, op(y, z)) for any x, y and z of type A
-    // * op(zero, x) == op(x, zero) for any x of type A
-    // For sum this is: Type = Integer, op = + and zero = 0
-    // For product this is: Type = Integer, op = * and zero = 1
-    // Whenever there is a Monoid, it can be used to fold a list.
-    //
-    // Implement a function insists which repeats an asynchronous operation n times or until
-    // it succeeds. Type Future forms a Monoid with op = recoverWith and zero = Future.failed().
-    @Test
-    public void reachPaymentProviderAfterThreeTries(){
-        var maxAttempts = 5;
-        var actualInvocations = new AtomicInteger(0);
-
-        var future = insist(chargePaymentProviderAfterThirdTry(actualInvocations), maxAttempts);
-
-        var result = future.get();
-        assertThat(actualInvocations.get(), equalTo(3));
-        assertThat(result, equalTo("Credit card charged"));
-    }
-
-    private Supplier<Future<String>> chargePaymentProviderAfterThirdTry(AtomicInteger actualInvocations) {
-        return () -> {
-                actualInvocations.getAndIncrement();
-                return actualInvocations.get() >= 3 ? successful("Credit card charged") :
-                        failed(new IllegalStateException("Server does not respond."));
-            };
-    }
-
-    @Test
-    public void exhaustRetriesWhenPaymentProviderIsNotReachable(){
-        var maxAttempts = 5;
-        var actualInvocations = new AtomicInteger(0);
-        var paymentProviderHasANonResponsiverServer = (Supplier<Future<String>>) () -> {
-            actualInvocations.getAndIncrement();
-            return failed(new IllegalStateException("Server does not respond."));
-        };
-
-        insist(paymentProviderHasANonResponsiverServer, maxAttempts).await();
-
-        assertThat(actualInvocations.get(), equalTo(maxAttempts));
-    }
-
-    public <A> Future<A> insist(Supplier<Future<A>> asyncComputation, int maxAttempts) {
-        var zero = new IllegalStateException("Could not complete computation after "+maxAttempts+" attempts.");
-        return List.fill(maxAttempts, () -> asyncComputation)
-                .foldLeft(Future.failed(zero), (last, current) -> last.recoverWith(ex -> current.get()));
-    }
 
 }

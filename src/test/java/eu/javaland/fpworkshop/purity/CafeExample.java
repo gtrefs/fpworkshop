@@ -81,7 +81,7 @@ public class CafeExample {
                 @Override
                 public void process(Charge charge) {
                     try {
-                        Thread.sleep(5_000);
+                        Thread.sleep(2_000);
                         if (Math.random() > 0.2) throw new IllegalStateException("The server does not respond");
                     } catch (InterruptedException e) {
                         e.printStackTrace();

@@ -1,6 +1,7 @@
 package eu.javaland.fpworkshop.datastructures;
 
 import io.vavr.Function1;
+import io.vavr.Tuple;
 import io.vavr.control.Option;
 
 import java.util.NoSuchElementException;
@@ -55,6 +56,10 @@ sealed interface List<E> {
 
     default List<E> drop(int n) {
         return TODO();
+   }
+
+    default List<E> reverse(){
+        return foldLeft(List.nil(),(list, element) -> cons(element, list));
     }
 
     default <U> U foldLeft(U zero, BiFunction<? super U, ? super E, ? extends U> f){

@@ -6,14 +6,12 @@ import io.vavr.API;
 import io.vavr.Function1;
 import io.vavr.collection.List;
 import io.vavr.concurrent.Future;
-import io.vavr.control.Try;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 import java.util.function.Consumer;
 
-import static io.vavr.API.*;
+import static io.vavr.API.TODO;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 

@@ -1,7 +1,7 @@
 package eu.javaland.fpworkshop.propertybasedtesting;
 
 import eu.javaland.fpworkshop.propertybasedtesting.Exercises.DataAccessLayer.Query;
-import eu.javaland.fpworkshop.propertybasedtesting.Exercises.DataAccessLayer.QueryResult.Success;
+import io.vavr.concurrent.Future;
 import net.jqwik.api.*;
 import net.jqwik.api.statistics.Histogram;
 import net.jqwik.api.statistics.Statistics;
@@ -13,17 +13,15 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 import static io.vavr.API.TODO;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class Exercises {
 
-
-    // Goal is to showcase real world examples on how property based testing can help. For example, it would be useful
-    // to use Property Based Testing for refactoring. Further, it would be nice to also able handle stateful applications.
-
-    // 1. Is the following property a good property for a list reversal algorithm?
+    // Exercise 1
+    // Is the following property a good property for a list reversal algorithm?
     // Why and why not? If not, how could you overcome its flaw?
 
     @Property
@@ -47,13 +45,8 @@ public class Exercises {
         assertThat(copy.getFirst()).isEqualTo(list.getLast());
     }
 
-
-    @Example
-    public void xxx(){
-
-    }
-
-    // 2. Modelling / Refactoring
+    // Exercise 2
+    // Modelling / Refactoring
 
     // Modeling essentially requires you to write an indirect and very simple implementation of your code — often an
     // algorithmically inefficient one — and pit it against the real implementation. The model should be so simple
@@ -86,7 +79,8 @@ public class Exercises {
         }
     }
 
-    // 3. Using Statistics / Fuzzing
+    // Exercise 3
+    // Statistics / Fuzzing
 
     // In many situations you’d like to know if jqwik will really generate the kind of values you expect and if the
     // frequency and distribution of certain value classes meets your testing needs. [jqwik User Guide, Collecting and
@@ -104,12 +98,12 @@ public class Exercises {
     // jqwik to monitor hits and misses. A good candidate for a cache would be a ConcurrentHashMap. The compute method
     // guarantees atomic access to the keys and lets you run a computation creating the value.
 
-    DataAccessLayer database = new DataAccessLayer(new DataAccessLayer.Database());
+    DataAccessLayer dataAccessLayer = new DataAccessLayer(DataAccessLayer.Database.inMemory());
 
     @Property
     @StatisticsReport(format = Histogram.class)
     public void collectStatistics(@ForAll("queries") Query query){
-        Optional<String> queryResult = database.query(query);
+       dataAccessLayer.query(query).get();
     }
 
     @Provide
@@ -120,39 +114,40 @@ public class Exercises {
     static class DataAccessLayer {
 
         private final Database database;
-        private ConcurrentHashMap<Query, QueryResult<String>> cache = new ConcurrentHashMap<>();
+        private ConcurrentHashMap<Query, Future<String>> cache = new ConcurrentHashMap<>();
 
         DataAccessLayer(Database database) {
             this.database = database;
         }
 
-        public Optional<String> query(Query query){
-            return cache.compute(query, (key, value) -> Objects.requireNonNullElseGet(value, () -> query.run(database))).toOptional();
+        public Future<String> query(Query query){
+            return cache.compute(query, (key, value) -> {
+                if(value != null) {
+                    return value;
+                }
+                return database.run(key);
+            });
         }
 
         record Query(String query) {
-            QueryResult<String> run(Database database){
-                return new Success<>(database.read());
-            }
         }
 
-        sealed interface QueryResult<T>{
-            record Success<T>(T result) implements QueryResult<T>{}
-            record Failure() implements QueryResult<Void>{}
-
-            default Optional<T> toOptional(){
-                return switch (this) {
-                    case QueryResult.Success<T>(T result) -> Optional.ofNullable(result);
-                    default -> Optional.empty();
-                };
+        private interface Database {
+            static Database inMemory(){
+                return new InMemory();
             }
+            String read();
+            Future<String> run(Query query);
         }
 
-        private static class Database {
+        private static class InMemory implements Database {
             AtomicInteger accessCounter = new AtomicInteger(0);
-
             public String read() {
                 return "Access: " + accessCounter.getAndIncrement();
+            }
+
+            public Future<String> run(Query query){
+                return Future.of(this::read);
             }
         }
     }
